@@ -1,0 +1,50 @@
+:root {
+  /* PDF-like white-first (default) */
+  --bg: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-soft: #f3f6f9;
+  --text: #1a2332;
+  --text-muted: #5a6b7d;
+  --nile: #2f6f8f;
+  --nile-deep: #1f5470;
+  --insured: #2f9a74;
+  --uninsured: #c45c3e;
+  --proposed: #b8860b;
+  --border: rgba(26, 35, 50, 0.12);
+  --danger: #c62828;
+  --shadow: 0 10px 36px rgba(26, 35, 50, 0.08);
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --radius: 14px;
+  --rail-w: 72px;
+  --prose-max: 72ch;
+  --chart-axis: #5a6b7d;
+  --chart-grid: rgba(26, 35, 50, 0.08);
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: rgba(26, 35, 50, 0.12);
+  --chart-tooltip-text: #1a2332;
+  --chart-pie-border: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg: #0b1c2c;
+  --bg-elevated: #132a40;
+  --bg-soft: #1a3550;
+  --text: #e8eef4;
+  --text-muted: #8aa0b5;
+  --nile: #3d9ebd;
+  --nile-deep: #2f6f8f;
+  --insured: #3fae8a;
+  --uninsured: #d97757;
+  --proposed: #e2b84a;
+  --border: rgba(232, 238, 244, 0.12);
+  --danger: #e85d5d;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  --chart-axis: #8aa0b5;
+  --chart-grid: rgba(232, 238, 244, 0.08);
+  --chart-tooltip-bg: #132a40;
+  --chart-tooltip-border: rgba(232, 238, 244, 0.12);
+  --chart-tooltip-text: #e8eef4;
+  --chart-pie-border: #0b1c2c;
+}
