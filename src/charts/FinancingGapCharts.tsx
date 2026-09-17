@@ -52,16 +52,24 @@ export function FinancingGapCharts() {
           borderColor: t.tooltipBorder,
           textStyle: { color: t.tooltipText },
         },
-        legend: { textStyle: { color: t.muted } },
-        grid: { left: 80, right: 24, top: 40, bottom: 30 },
+        legend: {
+          textStyle: { color: t.muted },
+          top: 4,
+          left: "center",
+          itemGap: 18,
+        },
+        grid: { left: 72, right: 20, top: 52, bottom: 36, containLabel: false },
         xAxis: {
           type: "category",
           data: ["Total need", "Secured", "Financing gap"],
-          axisLabel: { color: t.axis },
+          axisLabel: { color: t.axis, fontSize: 12, margin: 12 },
+          axisTick: { alignWithLabel: true },
         },
         yAxis: {
           type: "value",
           name: "USD bn",
+          nameGap: 12,
+          nameTextStyle: { color: t.muted, padding: [0, 0, 0, 8] },
           axisLabel: { color: t.axis },
           splitLine: { lineStyle: { color: t.grid } },
         },
@@ -69,12 +77,13 @@ export function FinancingGapCharts() {
           {
             name: "Mitigation",
             type: "bar",
+            barGap: "28%",
             data: [
               mitigationSummary.totalBn,
               mitigationSummary.securedBn,
               mitigationSummary.gapBn,
             ],
-            itemStyle: { color: t.nile },
+            itemStyle: { color: t.nile, borderRadius: [6, 6, 0, 0] },
             ...baseAnim,
           },
           {
@@ -85,7 +94,7 @@ export function FinancingGapCharts() {
               adaptationSummary.securedBn,
               adaptationSummary.gapBn,
             ],
-            itemStyle: { color: t.uninsured },
+            itemStyle: { color: t.uninsured, borderRadius: [6, 6, 0, 0] },
             ...baseAnim,
           },
         ],
@@ -109,7 +118,7 @@ export function FinancingGapCharts() {
           return `${p.name}<br/>$${p.value} bn`;
         },
       },
-      grid: { left: 120, right: 24, top: 20, bottom: 30 },
+      grid: { left: 8, right: 28, top: 16, bottom: 24, containLabel: true },
       xAxis: {
         type: "value",
         axisLabel: { color: t.axis },
@@ -118,7 +127,12 @@ export function FinancingGapCharts() {
       yAxis: {
         type: "category",
         data: top.map((r) => r.sector).reverse(),
-        axisLabel: { color: t.text, width: 100, overflow: "truncate" },
+        axisLabel: {
+          color: t.text,
+          width: isMobile ? 88 : 120,
+          overflow: "truncate",
+          fontSize: 12,
+        },
       },
       series: [
         {
@@ -132,26 +146,32 @@ export function FinancingGapCharts() {
         },
       ],
     };
-  }, [plan]);
+  }, [plan, isMobile]);
 
   const summary = plan === "adaptation" ? adaptationSummary : mitigationSummary;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <div className="tabs">
+    <div className="finance-lab">
+      <div className="finance-filter-bar" role="tablist" aria-label="Financing plan filter">
         <button
+          type="button"
+          role="tab"
           className={`tab ${plan === "mitigation" ? "active" : ""}`}
           onClick={() => setPlan("mitigation")}
         >
           Table 3 · Mitigation
         </button>
         <button
+          type="button"
+          role="tab"
           className={`tab ${plan === "adaptation" ? "active" : ""}`}
           onClick={() => setPlan("adaptation")}
         >
           Table 4 · Adaptation
         </button>
         <button
+          type="button"
+          role="tab"
           className={`tab ${plan === "compare" ? "active" : ""}`}
           onClick={() => setPlan("compare")}
         >
@@ -202,18 +222,20 @@ export function FinancingGapCharts() {
         </div>
       </div>
 
-      <div className="panel" style={{ flex: 1 }}>
-        <h3>
+      <div className="panel finance-chart-panel">
+        <h3 className="finance-chart-title">
           {plan === "mitigation" && "Table 3 — Mitigation plan by sector"}
           {plan === "adaptation" && "Table 4 — Adaptation plan by sector"}
           {plan === "compare" && "Tables 3 & 4 — Financing gaps side by side"}
         </h3>
-        <ReactECharts
-          option={option}
-          style={{ height: isMobile ? 220 : 300 }}
-          opts={{ renderer: "svg" }}
-          notMerge
-        />
+        <div className="finance-chart-frame">
+          <ReactECharts
+            option={option}
+            style={{ height: isMobile ? 240 : 300, width: "100%" }}
+            opts={{ renderer: "svg" }}
+            notMerge
+          />
+        </div>
         <div className="source">
           Source: Ministry of Environment (2022) · Egypt National Climate Change Strategy 2050
         </div>

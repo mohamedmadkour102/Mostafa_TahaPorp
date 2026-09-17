@@ -5,11 +5,13 @@ import {
   ContentModeProvider,
   useContentMode,
 } from "../components/SceneShell";
+import { CoverScene } from "../sections/Cover";
 import { OpeningScene } from "../sections/Opening";
 import { GlobalScene } from "../sections/Global";
 import { EgyptScene } from "../sections/Egypt";
 import { FinanceScene } from "../sections/Finance";
-import { CatBondScene } from "../sections/CatBond";
+import { LitHazardScene } from "../sections/LitHazard";
+import { LitInstrumentScene } from "../sections/LitInstrument";
 import { GapScene } from "../sections/Gap";
 import { HypothesesScene } from "../sections/Hypotheses";
 import { MethodScene } from "../sections/Method";
@@ -17,13 +19,16 @@ import { SimulationScene } from "../sections/Simulation";
 import { ContributionScene } from "../sections/Contribution";
 import { LimitsScene } from "../sections/Limits";
 import { CloseScene } from "../sections/Close";
+import { ThanksScene } from "../sections/Thanks";
 
 const sceneMap: Record<SectionId, ReactNode> = {
+  cover: null,
   opening: null,
   global: <GlobalScene />,
   egypt: <EgyptScene />,
   finance: <FinanceScene />,
-  catbond: <CatBondScene />,
+  litHazard: <LitHazardScene />,
+  litInstrument: <LitInstrumentScene />,
   gap: <GapScene />,
   hypotheses: <HypothesesScene />,
   method: <MethodScene />,
@@ -31,6 +36,7 @@ const sceneMap: Record<SectionId, ReactNode> = {
   contribution: <ContributionScene />,
   limits: <LimitsScene />,
   close: <CloseScene />,
+  thanks: null,
 };
 
 function PresentationInner() {
@@ -123,8 +129,12 @@ function PresentationInner() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.35 }}
             >
-              {section.id === "opening" ? (
-                <OpeningScene onEnter={() => go(1)} />
+              {section.id === "cover" ? (
+                <CoverScene onEnter={() => go(1)} />
+              ) : section.id === "opening" ? (
+                <OpeningScene onEnter={() => go(2)} />
+              ) : section.id === "thanks" ? (
+                <ThanksScene />
               ) : (
                 sceneMap[section.id]
               )}

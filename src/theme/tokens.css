@@ -7,15 +7,16 @@
   --text-muted: #5a6b7d;
   --nile: #2f6f8f;
   --nile-deep: #1f5470;
+  --title: #0b1f3a;
   --insured: #2f9a74;
   --uninsured: #c45c3e;
   --proposed: #b8860b;
   --border: rgba(26, 35, 50, 0.12);
   --danger: #c62828;
   --shadow: 0 10px 36px rgba(26, 35, 50, 0.08);
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body: "IBM Plex Sans", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Cairo", system-ui, sans-serif;
+  --font-body: "Cairo", system-ui, sans-serif;
+  --font-mono: "Cairo", system-ui, sans-serif;
   --radius: 14px;
   --rail-w: 72px;
   --prose-max: 72ch;
@@ -35,6 +36,7 @@
   --text-muted: #8aa0b5;
   --nile: #3d9ebd;
   --nile-deep: #2f6f8f;
+  --title: #c5d4e8;
   --insured: #3fae8a;
   --uninsured: #d97757;
   --proposed: #e2b84a;

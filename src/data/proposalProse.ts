@@ -7,6 +7,16 @@ export type ProseBlock = {
 };
 
 export const proposalProse: Record<SectionId, ProseBlock[]> = {
+  cover: [
+    {
+      heading: "Title page",
+      paragraphs: [
+        "Master Proposal — Insurance-Linked Securities for Hydrometeorological risks: Pricing a Catastrophe Bond for the Egyptian Market.",
+        "Submitted by Mostafa Taha Atrees, Teaching Assistant, Insurance & Actuarial Science Department, Faculty of Commerce, Cairo University.",
+      ],
+    },
+  ],
+
   opening: [
     {
       heading: "1. Introduction",
@@ -98,7 +108,24 @@ export const proposalProse: Record<SectionId, ProseBlock[]> = {
     },
   ],
 
-  catbond: [
+  litHazard: [
+    {
+      heading: "2.1 Literature — Hydrometeorological Hazards (Floods)",
+      paragraphs: [
+        "Egypt's arid climate and distinctive landscape, especially its desert areas and extensive dry wadi systems, make several regions, including the Sinai Peninsula, the Red Sea coast, and Upper Egypt, highly vulnerable to flash floods (Helmi & Zohny, 2020). For instance, the 2010 flash flood in Wadi El-Arish destroyed around 780 houses, damaged agricultural land and property, and resulted in direct economic losses of more than US$25.3 million (Helmi & Zohny, 2020). More recently, severe floods in Ras Ghareb in 2016 and 2020, as well as the 2015 flooding in Alexandria, caused fatalities, damaged roads, buildings, and public facilities, and forced many people to leave their homes (Arnous et al., 2022; Haddad et al., 2025).",
+        "The severity and frequency of flash floods in Egypt are expected to increase as a result of climate change (Tarek et al., 2024; World Bank, 2022). These changes could expose an additional 1.1 million people to severe flood risk each year (World Bank, 2022). Rapid urban growth and paved surfaces reduce natural drainage, making urban and coastal areas more vulnerable to flooding.",
+      ],
+    },
+    {
+      heading: "2.1 Literature — Storms and Mediterranean Cyclones",
+      paragraphs: [
+        "Egypt’s northern coast is historically exposed to extreme weather events, ranging from typical winter storms to highly destructive mesoscale cyclones, known as Mediterranean Hurricanes or \"Medicanes\" (Miglietta, 2019; Reale et al., 2022). An unexpected late-spring convective storm on May 31, 2025, dropped 13.0 mm of rainfall in Abu Qir within a few hours — more than six times the monthly historical average — causing rapid localized urban flooding across Alexandria (Labib et al., 2026).",
+        "In Alexandria, up to 74% of the urban population will face direct risk from coastal flooding by 2100. A 1.0-meter relative sea-level rise could submerge up to 15% of agricultural land in the Nile Delta, displace 6.7 million residents, and cause over $35 billion USD in direct economic losses (Esmat et al., 2025).",
+      ],
+    },
+  ],
+
+  litInstrument: [
     {
       heading: "2.2 Catastrophe (CAT) Bonds — Emergence and definitions",
       paragraphs: [
@@ -233,4 +260,6 @@ export const proposalProse: Record<SectionId, ProseBlock[]> = {
       ],
     },
   ],
+
+  thanks: [],
 };

@@ -78,7 +78,7 @@ export function GlobalLossCharts() {
     return {
       backgroundColor: "transparent",
       animation: true,
-      textStyle: { color: t.muted, fontFamily: "IBM Plex Sans" },
+      textStyle: { color: t.muted, fontFamily: "Cairo, system-ui, sans-serif" },
       tooltip: {
         trigger: "axis",
         backgroundColor: t.tooltipBg,

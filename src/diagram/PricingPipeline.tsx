@@ -1,165 +1,219 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ModelCriteriaTable } from "../charts/ModelCriteriaTable";
 import { useSyncedCaption } from "../components/SceneShell";
-import { ChartDualView } from "../components/ChartDualView";
-import { pdfFigures } from "../data/pdfFigures";
 
-const steps = [
+type NodeId = "data" | "fit" | "wang" | "ma" | "monte" | "select";
+
+const nodes: Record<
+  NodeId,
   {
-    title: "EM-DAT sample",
+    title: string;
+    body: string;
+    caption: string;
+    formula?: string;
+    badge?: string;
+  }
+> = {
+  data: {
+    title: "EM-DAT · Hydrometeorological data",
     body: "18 hydrometeorological events in Egypt (1987–2025) from the international disaster database.",
-    caption: "Step 1 — Start from EM-DAT Egyptian hydro events (n = 18, 1987–2025).",
-    figRegion: "Data",
+    caption: "Start from EM-DAT Egyptian hydro events (n = 18, 1987–2025).",
+    badge: "Sample",
   },
-  {
+  fit: {
     title: "Frequency & severity fitting",
     body: "Frequency via Poisson process; severity via best-fitting heavy-tailed distribution (Lognormal vs Gamma).",
-    caption: "Step 2 — Fit Poisson frequency and heavy-tailed severity (Lognormal vs Gamma).",
-    figRegion: "Fit",
+    caption: "Fit Poisson frequency and heavy-tailed severity (Lognormal vs Gamma).",
   },
-  {
-    title: "Wang (2004) — Primary",
+  wang: {
+    title: "Wang (2004) — Primary model",
     body: "Two-factor distortion on the exceedance curve with Student-t correction for parameter uncertainty (df = n − 2).",
     formula: "S*(x) = Q_t( Φ⁻¹(S(x)) + λ_W )",
-    caption: "Step 3 — Wang two-factor primary model with Student-t uncertainty correction.",
-    figRegion: "Wang",
+    caption: "Wang two-factor primary model with Student-t uncertainty correction.",
+    badge: "Primary",
   },
-  {
-    title: "Ma (2025) — Benchmark",
+  ma: {
+    title: "Ma (2025) — Esscher benchmark",
     body: "Esscher transform on compound Poisson–Gamma: distorts both severity (β* = β − h) and frequency λ*.",
-    caption: "Step 4 — Ma Esscher benchmark distorts frequency and severity together.",
-    figRegion: "Ma / Esscher",
+    caption: "Ma Esscher benchmark distorts frequency and severity together.",
+    badge: "Benchmark",
   },
-  {
+  monte: {
     title: "Monte Carlo simulation",
-    body: "Simulate annual losses and CAT bond cash flows under each pricing operator.",
-    caption: "Step 5 — Monte Carlo turns distorted measures into risk-adjusted CAT cash flows.",
-    figRegion: "Monte Carlo",
+    body: "Simulate annual losses and CAT bond cash flows & prices under each pricing operator.",
+    caption: "Monte Carlo turns distorted measures into risk-adjusted CAT cash flows.",
   },
-  {
+  select: {
     title: "Compare & select",
     body: "Quantify the Wang–Ma pricing gap and select the operator that best fits small-sample heavy-tailed Egyptian risk.",
-    caption: "Step 6 — Compare spreads and select the operator best suited to Egypt’s sample.",
-    figRegion: "Selection",
+    caption: "Compare spreads and select the operator best suited to Egypt’s sample.",
   },
-];
+};
+
+const playOrder: NodeId[] = ["data", "fit", "wang", "ma", "monte", "select"];
 
 export function PricingPipeline() {
-  const [step, setStep] = useState(0);
+  const [active, setActive] = useState<NodeId>("data");
   const [autoPlay, setAutoPlay] = useState(false);
   const { setCaption } = useSyncedCaption();
+  const detail = nodes[active];
 
   useEffect(() => {
-    setCaption(`${steps[step].caption} · PDF Figure 5 flowchart available beside the live pipeline.`);
-  }, [step, setCaption]);
+    setCaption(`Figure 5 · ${detail.caption}`);
+  }, [detail, setCaption]);
 
   useEffect(() => {
     if (!autoPlay) return;
     const id = window.setInterval(() => {
-      setStep((s) => (s + 1) % steps.length);
-    }, 3200);
+      setActive((cur) => {
+        const i = playOrder.indexOf(cur);
+        return playOrder[(i + 1) % playOrder.length];
+      });
+    }, 2800);
     return () => window.clearInterval(id);
   }, [autoPlay]);
 
+  const pick = (id: NodeId) => {
+    setAutoPlay(false);
+    setActive(id);
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <ChartDualView
-        figureLabel={pdfFigures.fig5.label}
-        sourceNote={pdfFigures.fig5.source}
-        originalSrc={pdfFigures.fig5.src}
-        originalAlt={pdfFigures.fig5.alt}
-        defaultView="both"
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-            <div className="chip">Live pipeline · mirrors Figure 5</div>
-            <button className="btn" type="button" onClick={() => setAutoPlay((v) => !v)}>
-              {autoPlay ? "Pause auto-play" : "Auto-play steps"}
+    <div className="pricing-lab">
+      <div className="pricing-lab-toolbar">
+        <span className="chip">Figure 5 · Built-in interactive pipeline</span>
+        <button className="btn" type="button" onClick={() => setAutoPlay((v) => !v)}>
+          {autoPlay ? "Pause auto-play" : "Auto-play flow"}
+        </button>
+      </div>
+
+      <div className="fig5-layout">
+        <div className="fig5-diagram" aria-label="Figure 5 pricing methodology flowchart">
+          <button
+            type="button"
+            className={`fig5-node fig5-node--cylinder ${active === "data" ? "active" : ""}`}
+            onClick={() => pick("data")}
+          >
+            <span className="fig5-node-kicker">01 · Data</span>
+            <strong>EM-DAT</strong>
+            <em>Hydrometeorological data · Egypt · n = 18</em>
+          </button>
+
+          <div className="fig5-connector" aria-hidden>
+            <span />
+          </div>
+
+          <button
+            type="button"
+            className={`fig5-node ${active === "fit" ? "active" : ""}`}
+            onClick={() => pick("fit")}
+          >
+            <span className="fig5-node-kicker">02 · Fit</span>
+            <strong>Frequency &amp; severity fitting</strong>
+            <em>Poisson process + heavy-tailed severity</em>
+          </button>
+
+          <div className="fig5-connector fig5-connector--split" aria-hidden>
+            <span className="fig5-split-stem" />
+            <span className="fig5-split-bar" />
+            <span className="fig5-split-left" />
+            <span className="fig5-split-right" />
+          </div>
+
+          <div className="fig5-branch">
+            <button
+              type="button"
+              className={`fig5-node fig5-node--wang ${active === "wang" ? "active" : ""}`}
+              onClick={() => pick("wang")}
+            >
+              <span className="fig5-node-kicker">03 · Primary</span>
+              <strong>Wang (2004)</strong>
+              <em>Two-factor transform</em>
+            </button>
+            <button
+              type="button"
+              className={`fig5-node fig5-node--ma ${active === "ma" ? "active" : ""}`}
+              onClick={() => pick("ma")}
+            >
+              <span className="fig5-node-kicker">04 · Benchmark</span>
+              <strong>Ma (2025)</strong>
+              <em>Esscher transform</em>
             </button>
           </div>
 
-          <div className="pipeline-progress">
-            {steps.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                className={`pipeline-dot ${i === step ? "active" : ""} ${i < step ? "done" : ""}`}
-                onClick={() => {
-                  setAutoPlay(false);
-                  setStep(i);
-                }}
-                aria-label={`Go to step ${i + 1}`}
-              />
-            ))}
+          <div className="fig5-connector fig5-connector--merge" aria-hidden>
+            <span className="fig5-merge-left" />
+            <span className="fig5-merge-right" />
+            <span className="fig5-merge-bar" />
+            <span className="fig5-merge-stem" />
           </div>
 
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {steps.map((s, i) => (
-              <button
-                key={s.title}
-                className={`tab ${step === i ? "active" : ""}`}
-                onClick={() => {
-                  setAutoPlay(false);
-                  setStep(i);
-                }}
-              >
-                {i + 1}. {s.figRegion}
-              </button>
-            ))}
-          </div>
-
-          <motion.div
-            key={step}
-            className="panel"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+          <button
+            type="button"
+            className={`fig5-node ${active === "monte" ? "active" : ""}`}
+            onClick={() => pick("monte")}
           >
-            <h3>
-              Step {step + 1} — {steps[step].title}
-            </h3>
-            <p style={{ margin: 0, lineHeight: 1.55 }}>{steps[step].body}</p>
-            {steps[step].formula && (
-              <pre
-                style={{
-                  marginTop: 12,
-                  padding: 12,
-                  borderRadius: 10,
-                  background: "var(--bg-soft)",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 14,
-                  overflowX: "auto",
-                }}
-              >
-                {steps[step].formula}
-              </pre>
-            )}
-            <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+            <span className="fig5-node-kicker">05 · Simulation</span>
+            <strong>Monte Carlo simulation</strong>
+            <em>Simulated cash flows &amp; prices</em>
+          </button>
+
+          <div className="fig5-connector" aria-hidden>
+            <span />
+          </div>
+
+          <button
+            type="button"
+            className={`fig5-node fig5-node--select ${active === "select" ? "active" : ""}`}
+            onClick={() => pick("select")}
+          >
+            <span className="fig5-node-kicker">06 · Selection</span>
+            <strong>Compare &amp; select</strong>
+            <em>Wang–Ma gap · operator choice</em>
+          </button>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active}
+            className="panel fig5-detail"
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.28 }}
+          >
+            {detail.badge && <span className="chip">{detail.badge}</span>}
+            <h3>{detail.title}</h3>
+            <p>{detail.body}</p>
+            {detail.formula && <pre className="fig5-formula">{detail.formula}</pre>}
+            <div className="fig5-detail-nav">
               <button
+                type="button"
                 className="btn"
-                disabled={step === 0}
+                disabled={playOrder.indexOf(active) === 0}
                 onClick={() => {
-                  setAutoPlay(false);
-                  setStep((s) => Math.max(0, s - 1));
+                  const i = playOrder.indexOf(active);
+                  pick(playOrder[Math.max(0, i - 1)]);
                 }}
               >
                 Previous
               </button>
               <button
+                type="button"
                 className="btn btn-primary"
-                disabled={step === steps.length - 1}
+                disabled={playOrder.indexOf(active) === playOrder.length - 1}
                 onClick={() => {
-                  setAutoPlay(false);
-                  setStep((s) => Math.min(steps.length - 1, s + 1));
+                  const i = playOrder.indexOf(active);
+                  pick(playOrder[Math.min(playOrder.length - 1, i + 1)]);
                 }}
               >
                 Next step
               </button>
             </div>
           </motion.div>
-        </div>
-      </ChartDualView>
+        </AnimatePresence>
+      </div>
 
       <ModelCriteriaTable />
     </div>

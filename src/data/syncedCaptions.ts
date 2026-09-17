@@ -2,6 +2,8 @@ import type { SectionId } from "./research";
 
 /** Default caption shown when entering a section in Present mode */
 export const defaultCaptions: Partial<Record<SectionId, string>> = {
+  cover:
+    "Cairo University · Faculty of Commerce · Insurance & Actuarial Science — Master Proposal by Mostafa Taha Atrees.",
   opening:
     "Start from the research question — then walk the committee through the evidence.",
   global:
@@ -10,8 +12,10 @@ export const defaultCaptions: Partial<Record<SectionId, string>> = {
     "Explore GFDRR Figure 4: river vs coastal flood exposure — click hotspots (Alexandria, Delta, flash-flood sites) then scrub the future timeline.",
   finance:
     "NatCat helps fiscal resilience, but alone remains insufficient for heavy-tail risks — ILS / CAT bonds open capital markets.",
-  catbond:
-    "A CAT bond transfers catastrophe risk through an SPV: investors fund collateral; a trigger decides payout.",
+  litHazard:
+    "Click studies on the map and cards. Past evidence first, then Future projections — floods and storms from §2.1.",
+  litInstrument:
+    "Five cards: The tool → How it works → How literature prices it → Where applied → Need for Egypt.",
   gap: "Physical and macro studies exist for Egypt — an empirical hydrometeorological CAT bond pricing framework does not.",
   hypotheses:
     "Five hypotheses test Wang vs Ma spreads, tail fit, attachment sensitivity, market comparability, and climate trend.",
@@ -25,4 +29,5 @@ export const defaultCaptions: Partial<Record<SectionId, string>> = {
     "n=18, Egypt-only, hydro-only — scope limits motivate Wang’s uncertainty correction.",
   close:
     "Return to the question: how Egypt can price hydro catastrophe risk and transfer it via a CAT bond.",
+  thanks: "Thank you — questions and discussion welcome.",
 };

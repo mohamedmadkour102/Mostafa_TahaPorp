@@ -134,6 +134,16 @@ export function EgyptExposureCharts() {
             </button>
           </div>
 
+          <div className="grid-4 egypt-facts-row">
+            {egyptFacts.map((f) => (
+              <div key={f.label} className="metric">
+                <div className="label">{f.label}</div>
+                <div className="value">{f.value}</div>
+                <div className="note">{f.note}</div>
+              </div>
+            ))}
+          </div>
+
           <div className="grid-3">
             {climateIndices.map((idx) => (
               <div key={idx.name} className="panel" style={{ padding: 14 }}>
@@ -151,16 +161,6 @@ export function EgyptExposureCharts() {
                 <p className="lede" style={{ marginTop: 8, fontSize: 13 }}>
                   {idx.detail}
                 </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid-3">
-            {egyptFacts.map((f) => (
-              <div key={f.label} className="metric">
-                <div className="label">{f.label}</div>
-                <div className="value">{f.value}</div>
-                <div className="note">{f.note}</div>
               </div>
             ))}
           </div>
