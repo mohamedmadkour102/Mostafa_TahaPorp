@@ -269,6 +269,7 @@ export const egyptFacts = [
 ];
 
 export const sections = [
+  { id: "qr", label: "QR Proposal", short: "QR" },
   { id: "cover", label: "Title", short: "00" },
   { id: "opening", label: "Opening", short: "01" },
   { id: "global", label: "Global Gap", short: "02" },
@@ -289,6 +290,7 @@ export const sections = [
 export type SectionId = (typeof sections)[number]["id"];
 
 export const speakerNotes: Record<SectionId, string> = {
+  qr: "Invite the committee to scan the QR for the full written proposal. Then advance to the title page.",
   cover:
     "Hold on the title page. State name, department, and the proposal title. Then advance to the research question.",
   opening:

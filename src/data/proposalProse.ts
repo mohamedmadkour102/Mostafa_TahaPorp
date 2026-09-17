@@ -7,6 +7,15 @@ export type ProseBlock = {
 };
 
 export const proposalProse: Record<SectionId, ProseBlock[]> = {
+  qr: [
+    {
+      heading: "QR · Full proposal",
+      paragraphs: [
+        "Scan the on-screen QR code to open the full proposal document (extracted Proposal V4 text and figures) at https://cat-bond-defense.vercel.app/proposal.",
+      ],
+    },
+  ],
+
   cover: [
     {
       heading: "Title page",

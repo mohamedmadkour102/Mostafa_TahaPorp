@@ -2,6 +2,7 @@ import type { SectionId } from "./research";
 
 /** Default caption shown when entering a section in Present mode */
 export const defaultCaptions: Partial<Record<SectionId, string>> = {
+  qr: "Scan the QR code to open the full proposal text and figures on your phone.",
   cover:
     "Cairo University · Faculty of Commerce · Insurance & Actuarial Science — Master Proposal by Mostafa Taha Atrees.",
   opening:

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { sections, speakerNotes, type SectionId } from "../data/research";
 import {
   ContentModeProvider,
@@ -20,8 +21,10 @@ import { ContributionScene } from "../sections/Contribution";
 import { LimitsScene } from "../sections/Limits";
 import { CloseScene } from "../sections/Close";
 import { ThanksScene } from "../sections/Thanks";
+import { QrIntroScene } from "../sections/QrIntro";
 
 const sceneMap: Record<SectionId, ReactNode> = {
+  qr: null,
   cover: null,
   opening: null,
   global: <GlobalScene />,
@@ -118,6 +121,9 @@ function PresentationInner() {
       <div className="stage-wrap">
         <div className="defense-topbar">
           <span className="defense-top-title">CAT Bond Egypt · Defense</span>
+          <Link className="defense-top-link" to="/proposal">
+            Full proposal →
+          </Link>
         </div>
         <main className="stage">
           <AnimatePresence mode="wait">
@@ -129,10 +135,24 @@ function PresentationInner() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.35 }}
             >
-              {section.id === "cover" ? (
-                <CoverScene onEnter={() => go(1)} />
+              {section.id === "qr" ? (
+                <QrIntroScene
+                  onEnter={() =>
+                    go(sections.findIndex((s) => s.id === "cover"))
+                  }
+                />
+              ) : section.id === "cover" ? (
+                <CoverScene
+                  onEnter={() =>
+                    go(sections.findIndex((s) => s.id === "opening"))
+                  }
+                />
               ) : section.id === "opening" ? (
-                <OpeningScene onEnter={() => go(2)} />
+                <OpeningScene
+                  onEnter={() =>
+                    go(sections.findIndex((s) => s.id === "global"))
+                  }
+                />
               ) : section.id === "thanks" ? (
                 <ThanksScene />
               ) : (
