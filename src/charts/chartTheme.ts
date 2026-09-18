@@ -1,6 +1,9 @@
 /** Shared ECharts theme tokens reading CSS variables */
 export function chartTheme() {
-  const s = getComputedStyle(document.documentElement);
+  const scope =
+    (document.querySelector(".finance-weather-wrap") as HTMLElement | null) ??
+    document.documentElement;
+  const s = getComputedStyle(scope);
   const g = (name: string, fallback: string) =>
     s.getPropertyValue(name).trim() || fallback;
 

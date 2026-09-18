@@ -103,7 +103,9 @@ function PresentationInner() {
   }, [go, index, toggleMode, toggleDrawer, setDrawerOpen]);
 
   return (
-    <div className="presentation">
+    <div
+      className={`presentation ${section.id === "finance" ? "storm-chrome" : ""}`}
+    >
       <aside className="rail" aria-label="Sections">
         {sections.map((s, i) => (
           <button
