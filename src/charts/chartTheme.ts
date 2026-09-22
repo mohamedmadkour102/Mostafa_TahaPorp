@@ -1,8 +1,9 @@
 /** Shared ECharts theme tokens reading CSS variables */
 export function chartTheme() {
   const scope =
-    (document.querySelector(".finance-weather-wrap") as HTMLElement | null) ??
-    document.documentElement;
+    (document.querySelector(
+      ".storm-skin, .azure-skin, .midnight-skin",
+    ) as HTMLElement | null) ?? document.documentElement;
   const s = getComputedStyle(scope);
   const g = (name: string, fallback: string) =>
     s.getPropertyValue(name).trim() || fallback;

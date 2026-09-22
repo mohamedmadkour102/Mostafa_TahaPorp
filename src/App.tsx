@@ -6,7 +6,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Presentation />} />
+        <Route path="/" element={<Presentation variant="classic" />} />
+        <Route path="/v2" element={<Presentation variant="storm" />} />
+        <Route path="/v3" element={<Presentation variant="azure" />} />
+        <Route path="/v4" element={<Presentation variant="midnight" />} />
         <Route path="/proposal" element={<ProposalDocument />} />
         <Route path="/defense" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />

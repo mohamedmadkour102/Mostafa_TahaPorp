@@ -22,6 +22,9 @@ import { LimitsScene } from "../sections/Limits";
 import { CloseScene } from "../sections/Close";
 import { ThanksScene } from "../sections/Thanks";
 import { QrIntroScene } from "../sections/QrIntro";
+import { WeatherAtmosphere } from "../components/WeatherAtmosphere";
+
+export type PresentationVariant = "classic" | "storm" | "azure" | "midnight";
 
 const sceneMap: Record<SectionId, ReactNode> = {
   qr: null,
@@ -42,12 +45,15 @@ const sceneMap: Record<SectionId, ReactNode> = {
   thanks: null,
 };
 
-function PresentationInner() {
+function PresentationInner({ variant }: { variant: PresentationVariant }) {
+  const storm = variant === "storm";
+  const azure = variant === "azure";
+  const midnight = variant === "midnight";
   const [index, setIndex] = useState(0);
   const [presenter, setPresenter] = useState(false);
   const [overview, setOverview] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("light");
-  const { mode, toggleMode, toggleDrawer, setDrawerOpen, drawerOpen } = useContentMode();
+  const { toggleMode, toggleDrawer, setDrawerOpen } = useContentMode();
 
   const section = sections[index];
   const progress = ((index + 1) / sections.length) * 100;
@@ -102,32 +108,53 @@ function PresentationInner() {
     return () => window.removeEventListener("keydown", onKey);
   }, [go, index, toggleMode, toggleDrawer, setDrawerOpen]);
 
+  const variantLabel =
+    storm ? " · V2" : azure ? " · V3" : midnight ? " · V4" : "";
+
   return (
     <div
-      className={`presentation ${section.id === "finance" ? "storm-chrome" : ""}`}
+      className={`presentation no-rail ${
+        storm ? "storm-chrome hydro-fullbleed" : ""
+      } ${azure ? "azure-chrome" : ""} ${midnight ? "midnight-chrome" : ""}`}
     >
-      <aside className="rail" aria-label="Sections">
-        {sections.map((s, i) => (
-          <button
-            key={s.id}
-            className={i === index ? "active" : ""}
-            title={s.label}
-            onClick={() => go(i)}
-          >
-            <span className="rail-num">{s.short}</span>
-            <span className="rail-label">{s.label}</span>
-          </button>
-        ))}
-      </aside>
+      {storm && <WeatherAtmosphere />}
 
       <div className="stage-wrap">
         <div className="defense-topbar">
-          <span className="defense-top-title">CAT Bond Egypt · Defense</span>
-          <Link className="defense-top-link" to="/proposal">
-            Full proposal →
-          </Link>
+          <span className="defense-top-title">
+            CAT Bond Egypt · Defense{variantLabel}
+          </span>
+          <div className="defense-top-links">
+            {variant !== "classic" && (
+              <Link className="defense-top-link" to="/">
+                Classic
+              </Link>
+            )}
+            {variant !== "storm" && (
+              <Link className="defense-top-link" to="/v2">
+                Storm V2
+              </Link>
+            )}
+            {variant !== "azure" && (
+              <Link className="defense-top-link" to="/v3">
+                Nile Blue V3
+              </Link>
+            )}
+            {variant !== "midnight" && (
+              <Link className="defense-top-link" to="/v4">
+                Midnight V4
+              </Link>
+            )}
+            <Link className="defense-top-link" to="/proposal">
+              Full proposal →
+            </Link>
+          </div>
         </div>
-        <main className="stage">
+        <main
+          className={`stage ${storm ? "storm-skin" : ""} ${
+            azure ? "azure-skin" : ""
+          } ${midnight ? "midnight-skin" : ""}`}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={section.id}
@@ -164,16 +191,29 @@ function PresentationInner() {
           </AnimatePresence>
         </main>
 
-        <footer className="footer-bar">
-          <span className="footer-meta">
-            {section.short} · {section.label} ·{" "}
-            {mode === "full" ? "Study" : "Present"}
-            {drawerOpen ? " · Text open" : ""}
-          </span>
-          <div className="progress-track">
+        <footer className="footer-bar footer-elegant">
+          <div className="footer-slide">
+            <span className="footer-index">
+              {String(index + 1).padStart(2, "0")}
+              <span className="footer-index-sep">/</span>
+              {String(sections.length).padStart(2, "0")}
+            </span>
+            <span className="footer-label">{section.label}</span>
+          </div>
+          <div className="progress-track" aria-hidden>
             <div className="progress-fill" style={{ width: `${progress}%` }} />
           </div>
-          <span className="kbd-hint">→ ← · T · F · O · P · L</span>
+          <div className="footer-actions">
+            <button
+              type="button"
+              className="footer-overview-btn"
+              onClick={() => setOverview(true)}
+              title="Overview (O)"
+            >
+              Overview
+            </button>
+            <span className="kbd-hint">← → · O</span>
+          </div>
         </footer>
 
         {presenter && (
@@ -190,7 +230,11 @@ function PresentationInner() {
           <div className="overview" onClick={() => setOverview(false)}>
             <div className="overview-grid" onClick={(e) => e.stopPropagation()}>
               {sections.map((s, i) => (
-                <button key={s.id} onClick={() => go(i)}>
+                <button
+                  key={s.id}
+                  className={i === index ? "active" : ""}
+                  onClick={() => go(i)}
+                >
                   <span>{s.short}</span>
                   {s.label}
                 </button>
@@ -203,10 +247,14 @@ function PresentationInner() {
   );
 }
 
-export function Presentation() {
+export function Presentation({
+  variant = "classic",
+}: {
+  variant?: PresentationVariant;
+}) {
   return (
     <ContentModeProvider>
-      <PresentationInner />
+      <PresentationInner variant={variant} />
     </ContentModeProvider>
   );
 }

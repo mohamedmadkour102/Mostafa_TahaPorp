@@ -48,14 +48,18 @@ export function SimulationLab() {
     const t = chartTheme();
     return {
       backgroundColor: "transparent",
-      legend: { textStyle: { color: t.muted } },
+      legend: {
+        top: 4,
+        left: "center",
+        textStyle: { color: t.muted },
+      },
       tooltip: {
         trigger: "axis",
         backgroundColor: t.tooltipBg,
         borderColor: t.tooltipBorder,
         textStyle: { color: t.tooltipText },
       },
-      grid: { left: 48, right: 16, top: 36, bottom: 28 },
+      grid: { left: 48, right: 16, top: 52, bottom: 28 },
       xAxis: {
         type: "category",
         data: Array.from({ length: 13 }, (_, i) => `t${i}`),
