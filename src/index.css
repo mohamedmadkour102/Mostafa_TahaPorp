@@ -437,7 +437,7 @@ button {
   }
 }
 
-/* ?? Literature lab (interactive §2) ?? */
+/* Literature lab (interactive 2) */
 .lit-lab {
   display: flex;
   flex-direction: column;
@@ -3818,7 +3818,7 @@ button {
 }
 
 
-/* ?? Nile Blue V3 (classic layout, blue institutional palette) ?? */
+/* Nile Blue V3 (classic layout, blue institutional palette) */
 .presentation.azure-chrome {
   background:
     radial-gradient(1100px 520px at 0% 0%, rgba(43, 122, 158, 0.1), transparent 55%),
@@ -3920,7 +3920,7 @@ button {
   color: #ffffff;
 }
 
-/* ?? Midnight Navy V4 (dark institutional, teal + soft gold) ?? */
+/* Midnight Navy V4 (dark institutional, teal + soft gold) */
 .presentation.midnight-chrome {
   background:
     radial-gradient(900px 480px at 50% 20%, rgba(61, 184, 201, 0.08), transparent 55%),
