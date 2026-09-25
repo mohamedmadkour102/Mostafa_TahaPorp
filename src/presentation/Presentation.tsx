@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { sections, speakerNotes, type SectionId } from "../data/research";
 import {
@@ -53,20 +53,25 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
   const [presenter, setPresenter] = useState(false);
   const [overview, setOverview] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("light");
-  const { toggleMode, toggleDrawer, setDrawerOpen } = useContentMode();
+  const { toggleDrawer, setDrawerOpen } = useContentMode();
 
-  const section = sections[index];
-  const progress = ((index + 1) / sections.length) * 100;
+  const deck = useMemo(
+    () => (azure ? sections.filter((s) => s.id !== "opening") : sections),
+    [azure],
+  );
+
+  const section = deck[index] ?? deck[0];
+  const progress = ((index + 1) / deck.length) * 100;
 
   const go = useCallback((next: number) => {
-    setIndex(Math.max(0, Math.min(sections.length - 1, next)));
+    setIndex(Math.max(0, Math.min(deck.length - 1, next)));
     setOverview(false);
     setDrawerOpen(false);
     requestAnimationFrame(() => {
       const stage = document.querySelector(".stage");
       if (stage instanceof HTMLElement) stage.scrollTop = 0;
     });
-  }, [setDrawerOpen]);
+  }, [setDrawerOpen, deck.length]);
 
   useEffect(() => {
     document.documentElement.setAttribute(
@@ -92,9 +97,7 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
         setOverview((v) => !v);
       } else if (e.key.toLowerCase() === "l") {
         setTheme((t) => (t === "dark" ? "light" : "dark"));
-      } else if (e.key.toLowerCase() === "f") {
-        toggleMode();
-      } else if (e.key.toLowerCase() === "t") {
+      } else if (e.key.toLowerCase() === "s" || e.key.toLowerCase() === "t") {
         toggleDrawer();
       } else if (e.key === "Escape") {
         setOverview(false);
@@ -106,7 +109,7 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, index, toggleMode, toggleDrawer, setDrawerOpen]);
+  }, [go, index, toggleDrawer, setDrawerOpen]);
 
   const variantLabel =
     storm ? " · V2" : azure ? " · V3" : midnight ? " · V4" : "";
@@ -115,7 +118,9 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
     <div
       className={`presentation no-rail ${
         storm ? "storm-chrome hydro-fullbleed" : ""
-      } ${azure ? "azure-chrome" : ""} ${midnight ? "midnight-chrome" : ""}`}
+      } ${azure ? "azure-chrome" : ""} ${
+        azure && section.id === "cover" ? "azure-cover-full" : ""
+      } ${midnight ? "midnight-chrome" : ""}`}
     >
       {storm && <WeatherAtmosphere />}
 
@@ -171,11 +176,23 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
                   }
                 />
               ) : section.id === "cover" ? (
-                <CoverScene
-                  onEnter={() =>
-                    go(sections.findIndex((s) => s.id === "opening"))
-                  }
-                />
+                <div className={azure ? "nile-cover-stage" : undefined}>
+                  {azure && (
+                    <div className="nile-cover-atmosphere" aria-hidden>
+                      <WeatherAtmosphere />
+                      <div className="nile-cover-scrim" />
+                    </div>
+                  )}
+                  <CoverScene
+                    onEnter={() =>
+                      go(
+                        deck.findIndex((s) =>
+                          s.id === (azure ? "global" : "opening"),
+                        ),
+                      )
+                    }
+                  />
+                </div>
               ) : section.id === "opening" ? (
                 <OpeningScene
                   onEnter={() =>
@@ -196,7 +213,7 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
             <span className="footer-index">
               {String(index + 1).padStart(2, "0")}
               <span className="footer-index-sep">/</span>
-              {String(sections.length).padStart(2, "0")}
+              {String(deck.length).padStart(2, "0")}
             </span>
             <span className="footer-label">{section.label}</span>
           </div>
@@ -212,7 +229,7 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
             >
               Overview
             </button>
-            <span className="kbd-hint">← → · O</span>
+            <span className="kbd-hint">← → · O · S Summary</span>
           </div>
         </footer>
 
@@ -221,7 +238,7 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
             <h4>Presenter · {section.label}</h4>
             <p>{speakerNotes[section.id]}</p>
             <p style={{ marginTop: 10 }}>
-              Next: {sections[Math.min(sections.length - 1, index + 1)].label}
+              Next: {deck[Math.min(deck.length - 1, index + 1)].label}
             </p>
           </div>
         )}
@@ -229,7 +246,7 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
         {overview && (
           <div className="overview" onClick={() => setOverview(false)}>
             <div className="overview-grid" onClick={(e) => e.stopPropagation()}>
-              {sections.map((s, i) => (
+              {deck.map((s, i) => (
                 <button
                   key={s.id}
                   className={i === index ? "active" : ""}

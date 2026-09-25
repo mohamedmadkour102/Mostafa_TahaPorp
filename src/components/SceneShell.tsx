@@ -9,15 +9,10 @@ import {
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { SectionId } from "../data/research";
-import { proposalProse } from "../data/proposalProse";
+import { slideSummaries } from "../data/slideSummaries";
 import { defaultCaptions } from "../data/syncedCaptions";
 
-export type ContentMode = "present" | "full";
-
 type ModeCtx = {
-  mode: ContentMode;
-  setMode: (m: ContentMode) => void;
-  toggleMode: () => void;
   drawerOpen: boolean;
   setDrawerOpen: (v: boolean) => void;
   toggleDrawer: () => void;
@@ -34,18 +29,14 @@ type CaptionCtx = {
 const CaptionContext = createContext<CaptionCtx | null>(null);
 
 export function ContentModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<ContentMode>("present");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const value = useMemo(
     () => ({
-      mode,
-      setMode,
-      toggleMode: () => setMode((m) => (m === "full" ? "present" : "full")),
       drawerOpen,
       setDrawerOpen,
       toggleDrawer: () => setDrawerOpen((v) => !v),
     }),
-    [mode, drawerOpen],
+    [drawerOpen],
   );
   return (
     <ContentModeContext.Provider value={value}>{children}</ContentModeContext.Provider>
@@ -70,31 +61,34 @@ export function useSyncedCaption() {
   return ctx;
 }
 
-export function ProposalProse({ sectionId }: { sectionId: SectionId }) {
-  const blocks = proposalProse[sectionId] ?? [];
+export function SlideSummaryPanel({ sectionId }: { sectionId: SectionId }) {
+  const summary = slideSummaries[sectionId];
+  if (!summary) {
+    return (
+      <div className="prose-panel">
+        <p>No summary for this slide yet.</p>
+      </div>
+    );
+  }
   return (
-    <div className="prose-panel">
-      <div className="prose-badge">Proposal text · from Mostafa Taha Proposal V4</div>
-      {blocks.map((block, i) => (
-        <section key={i} className="prose-block">
-          {block.heading && <h3>{block.heading}</h3>}
-          {block.paragraphs.map((p, j) => (
-            <p key={j}>{p}</p>
+    <div className="prose-panel summary-panel">
+      <div className="prose-badge">Slide summary · from the proposal</div>
+      <section className="prose-block">
+        <h3>{summary.title}</h3>
+        {summary.paragraphs?.map((p, i) => (
+          <p key={i}>{p}</p>
+        ))}
+        <ul>
+          {summary.bullets.map((b, i) => (
+            <li key={i}>{b}</li>
           ))}
-          {block.bullets && block.bullets.length > 0 && (
-            <ul>
-              {block.bullets.map((b, j) => (
-                <li key={j}>{b}</li>
-              ))}
-            </ul>
-          )}
-        </section>
-      ))}
+        </ul>
+      </section>
     </div>
   );
 }
 
-function TextDrawer({
+function SummaryDrawer({
   sectionId,
   open,
   onClose,
@@ -129,16 +123,16 @@ function TextDrawer({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 280, damping: 32 }}
-            aria-label="Proposal text drawer"
+            aria-label="Slide summary drawer"
           >
             <div className="drawer-header">
-              <strong>Proposal text</strong>
+              <strong>Summary</strong>
               <button className="btn" type="button" onClick={onClose}>
                 Close · Esc
               </button>
             </div>
             <div className="drawer-body">
-              <ProposalProse sectionId={sectionId} />
+              <SlideSummaryPanel sectionId={sectionId} />
             </div>
           </motion.aside>
         </>
@@ -160,7 +154,7 @@ export function SceneShell({
   lede?: string;
   children: ReactNode;
 }) {
-  const { mode, setMode, drawerOpen, setDrawerOpen, toggleDrawer } = useContentMode();
+  const { drawerOpen, setDrawerOpen, toggleDrawer } = useContentMode();
   const [caption, setCaptionState] = useState(defaultCaptions[sectionId] ?? "");
 
   const setCaption = useCallback((c: string) => setCaptionState(c), []);
@@ -179,40 +173,30 @@ export function SceneShell({
 
   return (
     <CaptionContext.Provider value={captionValue}>
-      <div className={`scene scene-${mode}`}>
+      <div className="scene scene-present">
         <div className="scene-header">
           <div className="scene-header-row">
             <div>
               <div className="eyebrow">{eyebrow}</div>
               <h2>{title}</h2>
-              {lede && mode === "present" && <p className="lede">{lede}</p>}
+              {lede && <p className="lede">{lede}</p>}
             </div>
-            <div className="mode-toggle" role="group" aria-label="Content mode">
+            <div className="mode-toggle" role="group" aria-label="Slide tools">
               <button
-                className={`tab ${mode === "present" ? "active" : ""}`}
-                onClick={() => setMode("present")}
+                className={`tab ${drawerOpen ? "active" : ""}`}
                 type="button"
+                onClick={toggleDrawer}
               >
-                Present
-              </button>
-              <button
-                className={`tab ${mode === "full" ? "active" : ""}`}
-                onClick={() => setMode("full")}
-                type="button"
-              >
-                Study
-              </button>
-              <button className="tab" type="button" onClick={toggleDrawer}>
-                Text · T
+                Summary · S
               </button>
             </div>
           </div>
         </div>
 
-        <div className={`scene-body ${mode === "full" ? "with-prose" : ""}`}>
+        <div className="scene-body">
           <div className="scene-visual">
             {children}
-            {mode === "present" && caption && (
+            {caption && (
               <AnimatePresence mode="wait">
                 <motion.div
                   key={caption}
@@ -228,14 +212,9 @@ export function SceneShell({
               </AnimatePresence>
             )}
           </div>
-          {mode === "full" && (
-            <aside className="scene-prose">
-              <ProposalProse sectionId={sectionId} />
-            </aside>
-          )}
         </div>
 
-        <TextDrawer
+        <SummaryDrawer
           sectionId={sectionId}
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}

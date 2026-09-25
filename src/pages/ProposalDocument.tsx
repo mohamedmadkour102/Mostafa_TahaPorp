@@ -5,12 +5,12 @@ import {
   decadeLosses,
   meta,
   mitigationSummary,
-  modelCriteria,
   sections,
   type SectionId,
 } from "../data/research";
 import { proposalProse } from "../data/proposalProse";
 import { pdfFigures } from "../data/pdfFigures";
+import { PricingPipeline } from "../diagram/PricingPipeline";
 
 const readingOrder: SectionId[] = sections
   .map((s) => s.id)
@@ -21,7 +21,6 @@ const sectionFigures: Partial<
 > = {
   global: [pdfFigures.fig1, pdfFigures.fig2],
   egypt: [pdfFigures.fig3, pdfFigures.fig4River, pdfFigures.fig4Coastal],
-  method: [pdfFigures.fig5],
 };
 
 function FigureBlock({
@@ -138,32 +137,6 @@ function FinanceSummary() {
   );
 }
 
-function CriteriaTable() {
-  return (
-    <div className="doc-table-wrap">
-      <h4>Table 6 — Wang vs Ma model criteria</h4>
-      <table className="doc-table">
-        <thead>
-          <tr>
-            <th>Criterion</th>
-            <th>Wang (2004)</th>
-            <th>Ma (2025)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {modelCriteria.map((r) => (
-            <tr key={r.criterion}>
-              <td>{r.criterion}</td>
-              <td>{r.wang}</td>
-              <td>{r.ma}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
 export function ProposalDocument() {
   return (
     <div className="doc-page">
@@ -239,17 +212,21 @@ export function ProposalDocument() {
               {id === "global" && <DecadeTable />}
               {id === "egypt" && <IndicesTable />}
               {id === "finance" && <FinanceSummary />}
-              {id === "method" && <CriteriaTable />}
+              {id === "method" && (
+                <div className="doc-builtin">
+                  <PricingPipeline />
+                  <p className="doc-table-note">
+                    Figure 5 · Built-in pricing pipeline. Click a stage. Table 6 sits under the diagram.
+                  </p>
+                </div>
+              )}
             </section>
           );
         })}
       </article>
 
       <footer className="doc-footer">
-        <p>
-          Full proposal content extracted for defense ·{" "}
-          <Link to="/">Open interactive presentation</Link>
-        </p>
+        <p>Master proposal · Mostafa Taha Atrees · Cairo University</p>
       </footer>
     </div>
   );

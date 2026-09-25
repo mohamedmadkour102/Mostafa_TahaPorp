@@ -1,41 +1,31 @@
 import { motion } from "framer-motion";
 import { meta } from "../data/research";
 import {
-  ProposalProse,
+  SlideSummaryPanel,
   useContentMode,
 } from "../components/SceneShell";
 import { CountUp } from "../components/CountUp";
 import { defaultCaptions } from "../data/syncedCaptions";
 
 export function OpeningScene({ onEnter }: { onEnter: () => void }) {
-  const { mode, setMode, toggleDrawer, drawerOpen, setDrawerOpen } = useContentMode();
+  const { toggleDrawer, drawerOpen, setDrawerOpen } = useContentMode();
 
   return (
-    <div className={`scene scene-${mode}`}>
+    <div className="scene scene-present">
       <div className="scene-header-row" style={{ marginBottom: 8 }}>
         <div className="eyebrow">Master’s Thesis Proposal Defense · {meta.researcher}</div>
         <div className="mode-toggle">
           <button
-            className={`tab ${mode === "present" ? "active" : ""}`}
-            onClick={() => setMode("present")}
+            className={`tab ${drawerOpen ? "active" : ""}`}
             type="button"
+            onClick={toggleDrawer}
           >
-            Present
-          </button>
-          <button
-            className={`tab ${mode === "full" ? "active" : ""}`}
-            onClick={() => setMode("full")}
-            type="button"
-          >
-            Study
-          </button>
-          <button className="tab" type="button" onClick={toggleDrawer}>
-            Text · T
+            Summary · S
           </button>
         </div>
       </div>
 
-      <div className={`scene-body ${mode === "full" ? "with-prose" : ""}`} style={{ flex: 1 }}>
+      <div className="scene-body" style={{ flex: 1 }}>
         <div
           className="scene-visual"
           style={{
@@ -97,44 +87,34 @@ export function OpeningScene({ onEnter }: { onEnter: () => void }) {
             </div>
           </div>
 
-          {mode === "present" && (
-            <motion.div
-              className="synced-caption"
-              style={{ maxWidth: 640, textAlign: "left" }}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <span className="synced-caption-label">Now explaining</span>
-              <p>{defaultCaptions.opening}</p>
-            </motion.div>
-          )}
+          <motion.div
+            className="synced-caption"
+            style={{ maxWidth: 640, textAlign: "left" }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <span className="synced-caption-label">Now explaining</span>
+            <p>{defaultCaptions.opening}</p>
+          </motion.div>
 
           <button className="btn btn-primary" onClick={onEnter} style={{ marginTop: 4 }}>
             Explore the Research ↓
           </button>
         </div>
-
-        {mode === "full" && (
-          <aside className="scene-prose">
-            <ProposalProse sectionId="opening" />
-          </aside>
-        )}
       </div>
 
-      {/* Drawer handled globally via same provider — opening uses Presentation Escape;
-          local open uses ContentMode drawer; SceneShell not wrapping opening, so mount mini drawer */}
       {drawerOpen && (
         <>
           <div className="drawer-backdrop" onClick={() => setDrawerOpen(false)} />
-          <aside className="text-drawer" aria-label="Proposal text drawer">
+          <aside className="text-drawer" aria-label="Slide summary drawer">
             <div className="drawer-header">
-              <strong>Proposal text</strong>
+              <strong>Summary</strong>
               <button className="btn" type="button" onClick={() => setDrawerOpen(false)}>
                 Close · Esc
               </button>
             </div>
             <div className="drawer-body">
-              <ProposalProse sectionId="opening" />
+              <SlideSummaryPanel sectionId="opening" />
             </div>
           </aside>
         </>
