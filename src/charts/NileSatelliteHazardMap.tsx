@@ -313,8 +313,10 @@ export function NileSatelliteHazardMap({
     if (!ready || !map || !map.getSource("hazard-halos")) return;
 
     const riverOn = layer === "river";
-    const source = map.getSource("hazard-halos");
-    if (source && source.type === "geojson") {
+    const source = map.getSource("hazard-halos") as
+      | { type: string; setData?: (data: ReturnType<typeof haloData>) => void }
+      | undefined;
+    if (source?.type === "geojson" && source.setData) {
       source.setData(haloData(spots, layer, activeId));
     }
     for (const id of ["nile-glow", "nile-core"]) {
