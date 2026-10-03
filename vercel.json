@@ -1,3 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "headers": [
+    {
+      "source": "/vendor/maplibre/(.*).mjs",
+      "headers": [{ "key": "Content-Type", "value": "text/javascript" }]
+    }
+  ]
 }
