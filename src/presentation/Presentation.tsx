@@ -23,6 +23,7 @@ import { CloseScene } from "../sections/Close";
 import { ThanksScene } from "../sections/Thanks";
 import { QrIntroScene } from "../sections/QrIntro";
 import { WeatherAtmosphere } from "../components/WeatherAtmosphere";
+import { warmNileSatelliteTiles } from "../charts/NileSatelliteHazardMap";
 
 export type PresentationVariant = "classic" | "storm" | "azure" | "midnight";
 
@@ -111,6 +112,15 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [go, index, toggleDrawer, setDrawerOpen]);
 
+  const nileCut = azure && (section.id === "qr" || section.id === "cover");
+
+  useEffect(() => {
+    if (!azure) return;
+    const img = new Image();
+    img.src = "/atmosphere/hydro-risk-bg.jpg?v=storm-4k";
+    warmNileSatelliteTiles();
+  }, [azure]);
+
   const variantLabel =
     storm ? " · V2" : azure ? " · V3" : midnight ? " · V4" : "";
 
@@ -164,10 +174,10 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
             <motion.div
               key={section.id}
               className="stage-scene"
-              initial={{ opacity: 0, y: 12 }}
+              initial={nileCut ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.35 }}
+              exit={nileCut ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+              transition={{ duration: nileCut ? 0 : 0.35 }}
             >
               {section.id === "qr" ? (
                 <QrIntroScene
@@ -184,6 +194,7 @@ function PresentationInner({ variant }: { variant: PresentationVariant }) {
                     </div>
                   )}
                   <CoverScene
+                    instant={azure}
                     onEnter={() =>
                       go(
                         deck.findIndex((s) =>

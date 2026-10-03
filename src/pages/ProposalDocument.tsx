@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import {
   adaptationSummary,
   climateIndices,
@@ -140,18 +139,6 @@ function FinanceSummary() {
 export function ProposalDocument() {
   return (
     <div className="doc-page">
-      <header className="doc-topbar">
-        <div>
-          <p className="doc-kicker">Proposal text · from Mostafa Taha Proposal V4</p>
-          <h1 className="doc-brand">{meta.shortTitle}</h1>
-        </div>
-        <nav className="doc-nav">
-          <Link to="/" className="btn">
-            ← Interactive defense
-          </Link>
-        </nav>
-      </header>
-
       <article className="doc-article">
         <header className="doc-hero">
           <p className="doc-eyebrow">Master Proposal</p>

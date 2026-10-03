@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Map as MapLibreMap, Marker as MapLibreMarker, NavigationControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
-  EGYPT_MAP_BOUNDS,
   EGYPT_MAP_CENTER,
   EGYPT_MAP_ZOOM,
   type ExplorerSpot,
@@ -20,7 +19,7 @@ const SATELLITE_STYLE = {
       ],
       tileSize: 256,
       attribution: "Tiles © Esri",
-      maxzoom: 18,
+      maxzoom: 8,
     },
     labels: {
       type: "raster" as const,
@@ -28,7 +27,7 @@ const SATELLITE_STYLE = {
         "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
       ],
       tileSize: 256,
-      maxzoom: 16,
+      maxzoom: 8,
     },
   },
   layers: [
@@ -37,6 +36,7 @@ const SATELLITE_STYLE = {
       type: "raster" as const,
       source: "esri",
       paint: {
+        "raster-fade-duration": 0,
         "raster-saturation": -0.25,
         "raster-brightness-min": 0.08,
         "raster-brightness-max": 0.82,
@@ -47,10 +47,58 @@ const SATELLITE_STYLE = {
       id: "place-labels",
       type: "raster" as const,
       source: "labels",
-      paint: { "raster-opacity": 0.72 },
+      paint: { "raster-opacity": 0.72, "raster-fade-duration": 0 },
     },
   ],
 };
+
+const IMAGERY_TILE =
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+const LABEL_TILE =
+  "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
+
+function tileXY(lng: number, lat: number, z: number) {
+  const n = 2 ** z;
+  const x = Math.floor(((lng + 180) / 360) * n);
+  const rad = (lat * Math.PI) / 180;
+  const y = Math.floor(
+    ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n,
+  );
+  return { x, y };
+}
+
+/** Download the opening view before the Egypt slide mounts so tiles hit cache. */
+export function warmNileSatelliteTiles() {
+  const zooms = [6, 7];
+  const west = 26.2;
+  const east = 35.4;
+  const south = 29.0;
+  const north = 32.3;
+  const urls: string[] = [];
+  for (const z of zooms) {
+    const a = tileXY(west, north, z);
+    const b = tileXY(east, south, z);
+    for (let x = a.x; x <= b.x; x++) {
+      for (let y = a.y; y <= b.y; y++) {
+        const path = `${z}/${y}/${x}`;
+        urls.push(IMAGERY_TILE.replace("{z}/{y}/{x}", path));
+        urls.push(LABEL_TILE.replace("{z}/{y}/{x}", path));
+      }
+    }
+  }
+
+  let cursor = 0;
+  const pump = () => {
+    while (cursor < urls.length) {
+      const url = urls[cursor++];
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.decoding = "async";
+      img.src = url;
+    }
+  };
+  pump();
+}
 
 const NILE: [number, number][] = [
   [32.9, 24.05],
@@ -176,6 +224,7 @@ export function NileSatelliteHazardMap({
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<globalThis.Map<string, MapLibreMarker>>(new globalThis.Map());
   const onSelectRef = useRef(onSelect);
+  const openedOnRef = useRef<string | null>(null);
   onSelectRef.current = onSelect;
 
   useEffect(() => {
@@ -183,11 +232,16 @@ export function NileSatelliteHazardMap({
     if (!node) return;
     let cancelled = false;
 
+    const opening = spots.find((spot) => spot.id === activeId);
     const map = new MapLibreMap({
       container: node,
       style: SATELLITE_STYLE,
-      center: EGYPT_MAP_CENTER,
-      zoom: EGYPT_MAP_ZOOM,
+      center: opening ? [opening.lng, opening.lat] : EGYPT_MAP_CENTER,
+      zoom: opening ? 6.7 : EGYPT_MAP_ZOOM,
+      fadeDuration: 0,
+      pixelRatio: 1,
+      maxZoom: 8,
+      refreshExpiredTiles: false,
       attributionControl: { compact: true },
       maxBounds: [
         [20, 18],
@@ -287,7 +341,6 @@ export function NileSatelliteHazardMap({
         },
       });
       map.resize();
-      map.fitBounds(EGYPT_MAP_BOUNDS, { padding: 36, duration: 0 });
       if (!cancelled) setReady(true);
     });
 
@@ -360,12 +413,18 @@ export function NileSatelliteHazardMap({
     const spot = spots.find((s) => s.id === activeId);
     if (!map || !spot) return;
 
-    map.easeTo({
-      center: [spot.lng, spot.lat],
-      zoom: 6.7,
-      duration: 900,
-      essential: true,
-    });
+    if (openedOnRef.current !== activeId) {
+      const firstOpen = openedOnRef.current === null;
+      openedOnRef.current = activeId;
+      if (!firstOpen) {
+        map.easeTo({
+          center: [spot.lng, spot.lat],
+          zoom: 6.7,
+          duration: 450,
+          essential: true,
+        });
+      }
+    }
 
     const line = layer === "river" ? NILE : COAST;
     const end = nearestIndex(line, spot.lng, spot.lat);

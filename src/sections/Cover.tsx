@@ -18,7 +18,13 @@ const edgeSparks = [
   { left: "72%", top: "90%" },
 ];
 
-export function CoverScene({ onEnter }: { onEnter: () => void }) {
+export function CoverScene({
+  onEnter,
+  instant = false,
+}: {
+  onEnter: () => void;
+  instant?: boolean;
+}) {
   return (
     <div className="cover-scene">
       <div className="cover-glow cover-glow-tl" aria-hidden />
@@ -51,32 +57,36 @@ export function CoverScene({ onEnter }: { onEnter: () => void }) {
 
       <motion.header
         className="cover-header"
-        initial={{ opacity: 0, y: -10 }}
+        initial={instant ? false : { opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: instant ? 0 : 0.5 }}
       >
-        <img
-          className="cover-logo cover-logo-faculty"
-          src="/brand/faculty-commerce.png?v=2"
-          alt="Faculty of Commerce"
-        />
+        <span className="cover-logo-plate">
+          <img
+            className="cover-logo cover-logo-faculty"
+            src="/brand/faculty-commerce.png?v=2"
+            alt="Faculty of Commerce"
+          />
+        </span>
         <div className="cover-institution">
           <p>Cairo University</p>
           <p>Faculty of Commerce</p>
           <p>Insurance &amp; Actuarial Science Department</p>
         </div>
-        <img
-          className="cover-logo cover-logo-cu"
-          src="/brand/cairo-university.png?v=2"
-          alt="Cairo University"
-        />
+        <span className="cover-logo-plate">
+          <img
+            className="cover-logo cover-logo-cu"
+            src="/brand/cairo-university.png?v=2"
+            alt="Cairo University"
+          />
+        </span>
       </motion.header>
 
       <motion.div
         className="cover-body"
-        initial={{ opacity: 0, y: 16 }}
+        initial={instant ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, delay: 0.12 }}
+        transition={{ duration: instant ? 0 : 0.55, delay: instant ? 0 : 0.12 }}
       >
         <p className="cover-eyebrow">Master Proposal</p>
         <h1 className="cover-title">
@@ -92,18 +102,22 @@ export function CoverScene({ onEnter }: { onEnter: () => void }) {
 
         <motion.div
           className="cover-line"
-          initial={{ scaleX: 0 }}
+          initial={instant ? false : { scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ delay: 0.55, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          transition={
+            instant
+              ? { duration: 0 }
+              : { delay: 0.55, duration: 0.7, ease: [0.22, 1, 0.36, 1] }
+          }
         />
 
         <motion.button
           type="button"
           className="btn btn-primary"
           onClick={onEnter}
-          initial={{ opacity: 0, y: 8 }}
+          initial={instant ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.4 }}
+          transition={{ delay: instant ? 0 : 0.7, duration: instant ? 0 : 0.4 }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.98 }}
         >
