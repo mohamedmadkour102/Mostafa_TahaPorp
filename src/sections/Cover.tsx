@@ -64,7 +64,7 @@ export function CoverScene({
         <span className="cover-logo-plate">
           <img
             className="cover-logo cover-logo-faculty"
-            src="/brand/faculty-commerce.png?v=3"
+            src="/brand/faculty-commerce.png?v=4"
             alt="Faculty of Commerce"
           />
         </span>
@@ -76,7 +76,7 @@ export function CoverScene({
         <span className="cover-logo-plate">
           <img
             className="cover-logo cover-logo-cu"
-            src="/brand/cairo-university.png?v=3"
+            src="/brand/cairo-university.png?v=4"
             alt="Cairo University"
           />
         </span>
