@@ -317,6 +317,17 @@ export const speakerNotes: Record<SectionId, string> = {
   thanks: "Hold the thank-you beat. Leave space for committee questions.",
 };
 
+/** Shown on the National pin. WBG 2021 national total, not a Tarek et al. result. */
+export const nationalRecordedLoss = {
+  studyId: "tarek-wbg-mgmt",
+  label: "Recorded losses · World Bank 2021",
+  value: 346.7,
+  prefix: "$",
+  suffix: "m",
+  decimals: 1,
+  note: "27 climate-related events over about four decades. National total, not a figure from this study.",
+} as const;
+
 /** Literature §2.1 — study cards for interactive hazard review */
 export type LitStudyCard = {
   id: string;

@@ -665,6 +665,13 @@ button {
   margin-top: 4px;
 }
 
+.lit-study-metric-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
 .lit-path-rail {
   display: flex;
   flex-wrap: wrap;
@@ -4666,21 +4673,24 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  padding: 0;
-  box-shadow: none;
+  background: #f7fbfa;
+  border-radius: 22px;
+  padding: 12px 14px;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(226, 184, 74, 0.7);
 }
 
 .nile-cover-stage .cover-logo {
-  height: clamp(96px, 16vh, 148px);
+  height: clamp(132px, 22vh, 200px);
   width: auto;
-  max-width: 160px;
+  max-width: 210px;
   object-fit: contain;
   background: transparent;
 }
 
 .nile-cover-stage .cover-logo-faculty {
-  max-width: 120px;
+  max-width: 158px;
 }
 
 .nile-cover-stage .cover-logo-cu {

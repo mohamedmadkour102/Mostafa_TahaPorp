@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { litHazardStudies, type LitStudyCard } from "../data/research";
+import { litHazardStudies, nationalRecordedLoss, type LitStudyCard } from "../data/research";
 import { SceneShell, useSyncedCaption } from "../components/SceneShell";
 import { CountUp } from "../components/CountUp";
 
@@ -167,6 +167,21 @@ export function LitHazardScene() {
                   {active.authors} ({active.year})
                 </h3>
                 <p className="lit-study-finding">{active.finding}</p>
+                {active.id === nationalRecordedLoss.studyId && (
+                  <div className="lit-study-metric">
+                    <div className="label">{nationalRecordedLoss.label}</div>
+                    <div className="value">
+                      <CountUp
+                        key={`${active.id}-loss`}
+                        value={nationalRecordedLoss.value}
+                        decimals={nationalRecordedLoss.decimals}
+                        prefix={nationalRecordedLoss.prefix}
+                        suffix={nationalRecordedLoss.suffix}
+                      />
+                    </div>
+                    <p className="lit-study-metric-note">{nationalRecordedLoss.note}</p>
+                  </div>
+                )}
                 <div className="lit-study-metric">
                   {active.metricValue != null ? (
                     <>
